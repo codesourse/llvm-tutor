@@ -12,6 +12,7 @@ set(LLVM_TUTOR_PLUGINS
     DuplicateBB
     OpcodeCounter
     MergeBB
+    SymbolObfuscation
     )
 
 set(StaticCallCounter_SOURCES
@@ -38,6 +39,10 @@ set(OpcodeCounter_SOURCES
   OpcodeCounter.cpp)
 set(MergeBB_SOURCES
   MergeBB.cpp)
+set(SymbolObfuscation_SOURCES
+  SymbolObfuscation.cpp)
+
+
 
 # CONFIGURE THE PLUGIN LIBRARIES
 # ==============================

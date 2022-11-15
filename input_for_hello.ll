@@ -1,38 +1,34 @@
-; ModuleID = './inputs/input_for_hello.c'
-source_filename = "./inputs/input_for_hello.c"
+; ModuleID = '/Users/xiakejie/ME/break/llvm-tutor/inputs/input_for_hello.c'
+source_filename = "/Users/xiakejie/ME/break/llvm-tutor/inputs/input_for_hello.c"
 target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
 target triple = "arm64-apple-macosx12.0.0"
 
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind readnone ssp uwtable willreturn
-define i32 @foo(i32 %a) local_unnamed_addr #0 {
-entry:
-  %mul = shl nsw i32 %a, 1
-  ret i32 %mul
+define i32 @foo(i32 %0) local_unnamed_addr #0 {
+  %2 = shl nsw i32 %0, 1
+  ret i32 %2
 }
 
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind readnone ssp uwtable willreturn
-define i32 @bar(i32 %a, i32 %b) local_unnamed_addr #0 {
-entry:
-  %mul.i = shl i32 %b, 2
-  %add = add nsw i32 %mul.i, %a
-  ret i32 %add
+define i32 @bar(i32 %0, i32 %1) local_unnamed_addr #0 {
+  %3 = shl i32 %1, 2
+  %4 = add nsw i32 %3, %0
+  ret i32 %4
 }
 
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind readnone ssp uwtable willreturn
-define i32 @fez(i32 %a, i32 %b, i32 %c) local_unnamed_addr #0 {
-entry:
-  %mul.i.i = shl i32 %b, 2
-  %add.i = add nsw i32 %mul.i.i, %a
-  %mul = shl nsw i32 %add.i, 1
-  %mul1 = mul nsw i32 %c, 3
-  %add = add i32 %mul1, %a
-  %add2 = add i32 %add, %mul
-  ret i32 %add2
+define i32 @fez(i32 %0, i32 %1, i32 %2) local_unnamed_addr #0 {
+  %4 = shl i32 %1, 2
+  %5 = add nsw i32 %4, %0
+  %6 = shl nsw i32 %5, 1
+  %7 = mul nsw i32 %2, 3
+  %8 = add i32 %7, %0
+  %9 = add i32 %8, %6
+  ret i32 %9
 }
 
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind readnone ssp uwtable willreturn
-define i32 @main(i32 %argc, i8** nocapture readnone %argv) local_unnamed_addr #0 {
-entry:
+define i32 @main(i32 %0, i8** nocapture readnone %1) local_unnamed_addr #0 {
   ret i32 12915
 }
 
@@ -49,4 +45,4 @@ attributes #0 = { mustprogress nofree norecurse nosync nounwind readnone ssp uwt
 !5 = !{i32 7, !"PIC Level", i32 2}
 !6 = !{i32 7, !"uwtable", i32 1}
 !7 = !{i32 7, !"frame-pointer", i32 1}
-!8 = !{!"clang version 13.0.1 (https://github.com/llvm/llvm-project.git 75e33f71c2dae584b13a7d1186ae0a038ba98838)"}
+!8 = !{!"Homebrew clang version 13.0.1"}

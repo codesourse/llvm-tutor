@@ -1,7 +1,7 @@
 #export LLVM_DIR_OPT=/opt/homebrew/Cellar/llvm@13/13.0.1_2/bin/opt
 #export LLVM_DIR_CLANG=/opt/homebrew/Cellar/llvm@13/13.0.1_2/bin/clang
-#export LLVM_DIR=/opt/homebrew/Cellar/llvm@13/13.0.1_2
-export LLVM_DIR=/opt/homebrew/Cellar/llvm/15.0.3/
+export LLVM_DIR=/opt/homebrew/Cellar/llvm@13/13.0.1_2
+#export LLVM_DIR=/opt/homebrew/Cellar/llvm/15.0.3/
 
 #export LLVM_DIR_OPT=/opt/homebrew/Cellar/llvm/15.0.3/bin/opt
 #export LLVM_DIR_CLANG=/opt/homebrew/Cellar/llvm/15.0.3/bin/clang
@@ -12,7 +12,7 @@ rm -rf -r ./build
 mkdir build
 cp ./luck.bc ./build/hello.bc
 cd build
-cmake -DLT_LLVM_INSTALL_DIR=$LLVM_DIR  $LLVM_TUTOR_DIR/
+cmake -DLT_LLVM_INSTALL_DIR=$LLVM_DIR  ../
 make
 
 #clang -O1 -S -emit-llvm  $LLVM_TUTOR_DIR/inputs/input_for_hello.c -o input_for_hello.ll

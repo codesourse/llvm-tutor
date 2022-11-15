@@ -13,6 +13,7 @@ set(LLVM_TUTOR_PLUGINS
     OpcodeCounter
     MergeBB
     SymbolObfuscation
+    CodeReview
     )
 
 set(StaticCallCounter_SOURCES
@@ -41,6 +42,8 @@ set(MergeBB_SOURCES
   MergeBB.cpp)
 set(SymbolObfuscation_SOURCES
   SymbolObfuscation.cpp)
+set(CodeReview_SOURCES
+  CodeReview.cpp)
 
 
 

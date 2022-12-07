@@ -1,110 +1,84 @@
-//=============================================================================
-// FILE:
-//    HelloWorld.cpp
+//===- Hello.cpp - Example code from "Writing an LLVM Pass" ---------------===//
 //
-// DESCRIPTION:
-//    Visits all functions in a module, prints their names and the number of
-//    arguments via stderr. Strictly speaking, this is an analysis pass (i.e.
-//    the functions are not modified). However, in order to keep things simple
-//    there's no 'print' method here (every analysis pass should implement it).
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //
-// USAGE:
-//    1. Legacy PM
-//      opt -enable-new-pm=0 -load libHelloWorld.dylib -legacy-hello-world -disable-output `\`
-//        <input-llvm-file>
-//    2. New PM
-//      opt -load-pass-plugin=libHelloWorld.dylib -passes="hello-world" `\`
-//        -disable-output <input-llvm-file>
+//===----------------------------------------------------------------------===//
 //
+// This file implements two versions of the LLVM "Hello World" pass described
+// in docs/WritingAnLLVMPass.html
 //
-// License: MIT
-//=============================================================================
-#include "llvm/IR/LegacyPassManager.h"
-#include "llvm/Passes/PassBuilder.h"
-#include "llvm/Passes/PassPlugin.h"
+//===----------------------------------------------------------------------===//
+
+#include "llvm/ADT/Statistic.h"
+#include "llvm/IR/Function.h"
+#include "llvm/Pass.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/Transforms/IPO/PassManagerBuilder.h"
+
+#include "llvm/IR/Instructions.h"
+#include <string>
+#include <iostream>
+#include <cstdlib>
 
 using namespace llvm;
 
-//-----------------------------------------------------------------------------
-// HelloWorld implementation
-//-----------------------------------------------------------------------------
-// No need to expose the internals of the pass to the outside world - keep
-// everything in an anonymous namespace.
+#define DEBUG_TYPE "hello"
+
+STATISTIC(HelloCounter, "Counts number of functions greeted");
+using namespace std;
+static string obfcharacters="qwertyuiopasdfghjklzxcvbnm1234567890";
 namespace {
-
-// This method implements what the pass does
-void visitor(Function &F) {
-    errs() << "(llvm-tutor) Hello from: "<< F.getName() << "\n";
-    errs() << "(llvm-tutor)   number of arguments: " << F.arg_size() << "\n";
+  // Hello - The first implementation, without getAnalysisUsage.
+  struct Hello : public FunctionPass {
+    int seed = 0;
+    static char ID; // Pass identification, replacement for typeid
+    Hello() : FunctionPass(ID) {}
+    string randomString(int length){
+        string name;
+        name.resize(length);
+        srand(seed);
+        seed++;
+        for(int i=0;i<length;i++){
+            name[i]=obfcharacters[rand()%(obfcharacters.length())];
+        }
+        return name;
+    }
+    bool runOnFunction(Function &F) override {
+      ++HelloCounter;
+      errs() << "文件函数名1: ";
+      errs().write_escaped(F.getName()) << '\n';
+        
+        if (F.getName().str().compare("main")==0){
+            errs()<<"Skipping main\n";
+        }else if (F.getName().str().compare("function_export")==0){
+ 
+            errs()<<"Skipping Export Function: "<<F.getName()<<"\n";
+        }
+        else if(F.empty()==false){
+            //Rename
+            string newname = randomString(16);
+            errs()<<"Renaming Function: "<<F.getName()<<" --> New Name: "<<newname<<"\n";
+            F.setName(newname);
+        }
+        else{
+            errs()<<"Skipping External Function: "<<F.getName()<<"\n";
+        }
+      return false;
+    }
+      
+  };
 }
 
-// New PM implementation
-struct HelloWorld : PassInfoMixin<HelloWorld> {
-  // Main entry point, takes IR unit to run the pass on (&F) and the
-  // corresponding pass manager (to be queried if need be)
-  PreservedAnalyses run(Function &F, FunctionAnalysisManager &) {
-    visitor(F);
-    return PreservedAnalyses::all();
-  }
+char Hello::ID = 0;
+static RegisterPass<Hello> X("hello", "Hello World Pass");
 
-  // Without isRequired returning true, this pass will be skipped for functions
-  // decorated with the optnone LLVM attribute. Note that clang -O0 decorates
-  // all functions with optnone.
-  static bool isRequired() { return true; }
-};
 
-// Legacy PM implementation
-struct LegacyHelloWorld : public FunctionPass {
-  static char ID;
-  LegacyHelloWorld() : FunctionPass(ID) {}
-  // Main entry point - the name conveys what unit of IR this is to be run on.
-  bool runOnFunction(Function &F) override {
-    visitor(F);
-    // Doesn't modify the input unit of IR, hence 'false'
-    return false;
-  }
-};
-} // namespace
-
-//-----------------------------------------------------------------------------
-// New PM Registration
-//-----------------------------------------------------------------------------
-llvm::PassPluginLibraryInfo getHelloWorldPluginInfo() {
-  return {LLVM_PLUGIN_API_VERSION, "HelloWorld", LLVM_VERSION_STRING,
-          [](PassBuilder &PB) {
-            PB.registerPipelineParsingCallback(
-                [](StringRef Name, FunctionPassManager &FPM,
-                   ArrayRef<PassBuilder::PipelineElement>) {
-                  if (Name == "hello-world") {
-                    FPM.addPass(HelloWorld());
-                    return true;
-                  }
-                  return false;
-                });
-          }};
+static void registerSkeletonPass(const PassManagerBuilder &, legacy::PassManagerBase &PM)
+{
+   PM.add(new Hello());
 }
-
-// This is the core interface for pass plugins. It guarantees that 'opt' will
-// be able to recognize HelloWorld when added to the pass pipeline on the
-// command line, i.e. via '-passes=hello-world'
-extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
-llvmGetPassPluginInfo() {
-  return getHelloWorldPluginInfo();
-}
-
-//-----------------------------------------------------------------------------
-// Legacy PM Registration
-//-----------------------------------------------------------------------------
-// The address of this variable is used to uniquely identify the pass. The
-// actual value doesn't matter.
-char LegacyHelloWorld::ID = 0;
-
-// This is the core interface for pass plugins. It guarantees that 'opt' will
-// recognize LegacyHelloWorld when added to the pass pipeline on the command
-// line, i.e.  via '--legacy-hello-world'
-static RegisterPass<LegacyHelloWorld>
-    X("legacy-hello-world", "Hello World Pass",
-      true, // This pass doesn't modify the CFG => true
-      false // This pass is not a pure analysis pass => false
-    );
+ 
+static RegisterStandardPasses RegisterMyPass(PassManagerBuilder::EP_EarlyAsPossible, registerSkeletonPass);

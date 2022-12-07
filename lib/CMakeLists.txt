@@ -14,6 +14,7 @@ set(LLVM_TUTOR_PLUGINS
     MergeBB
     SymbolObfuscation
     CodeReview
+    PrintFunctionNames
     )
 
 set(StaticCallCounter_SOURCES
@@ -44,6 +45,8 @@ set(SymbolObfuscation_SOURCES
   SymbolObfuscation.cpp)
 set(CodeReview_SOURCES
   CodeReview.cpp)
+set(PrintFunctionNames_SOURCES
+  PrintFunctionNames.cpp)
 
 
 

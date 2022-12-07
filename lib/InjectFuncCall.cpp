@@ -35,6 +35,8 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
 #include "llvm/Passes/PassBuilder.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
 using namespace llvm;
 
@@ -157,3 +159,10 @@ char LegacyInjectFuncCall::ID = 0;
 static RegisterPass<LegacyInjectFuncCall>
     X(/*PassArg=*/"legacy-inject-func-call", /*Name=*/"LegacyInjectFuncCall",
       /*CFGOnly=*/false, /*is_analysis=*/false);
+
+static void registerSkeletonPass(const PassManagerBuilder &, legacy::PassManagerBase &PM)
+{
+   PM.add(new LegacyInjectFuncCall());
+}
+ 
+static RegisterStandardPasses RegisterMyPass(PassManagerBuilder::EP_EarlyAsPossible, registerSkeletonPass);

@@ -30,7 +30,7 @@ fi
 
 $LLVM_DIR/bin/clang -O1 -S -emit-llvm  $LLVM_TUTOR_DIR/inputs/input_for_hello.c -o input_for_hello.ll
 
-$LLVM_DIR/bin/opt  -load  libHelloWorld.dylib -helloworld ./hello.bc -o /dev/null -time-passes  -enable-new-pm=0
+$LLVM_DIR/bin/opt  -load  libHelloWorld.dylib -hello ./hello.bc -o /dev/null -time-passes  -enable-new-pm=0
  
 $LLVM_DIR/bin/opt -load  ./libHelloWorld.dylib -help | grep hello
 
@@ -71,7 +71,6 @@ printf "\n===-------------------------------------2-----------------------------
 $LLVM_DIR/bin/opt -load-pass-plugin ./lib/libOpcodeCounter.dylib --passes='default<Os>' input_for_cc.bc
 
 #$LLVM_DIR/bin/opt -load ./lib/libOpcodeCounter.dylib -O1 input_for_cc.bc
-exit
 
 
 printf "\n===-------------------------------------2------------------------------------===\n"
@@ -87,6 +86,7 @@ $LLVM_DIR/bin/opt -enable-new-pm=0 -load ./lib/libInjectFuncCall.dylib -legacy-i
 $LLVM_DIR/bin/lli instrumented.bin
 
 printf "\n===-------------------------------------3------------------------------------===\n"
+exit
 
 
 # Generate an LLVM file to analyze

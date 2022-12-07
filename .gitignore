@@ -1,6 +1,8 @@
 # Prerequisites
 *.d
 /build*
+/demo/LYFunTime-master/clang
+/demo/test/Pods
 
 # Compiled Object files
 *.slo

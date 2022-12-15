@@ -9,6 +9,36 @@ export LLVM_DIR=/opt/homebrew/Cellar/llvm@13/13.0.1_2
 
 export LLVM_TUTOR_DIR=/Users/xiakejie/ME/break/llvm-tutor
 
+
+
+rm -rf -r ./build_obfu
+
+folder="./build_obfu"
+
+if [ ! -x "$folder" ]; then
+
+mkdir $folder
+
+cd $folder
+cmake -DLT_LLVM_INSTALL_DIR=$LLVM_DIR  $LLVM_TUTOR_DIR/obfu/
+make
+
+else
+
+cd $folder
+
+fi
+
+rm -rf /Users/xiakejie/ME/break/llvm-tutor/demo/testmbaadd/Pods/lib/libobfu.dylib
+
+cp /Users/xiakejie/ME/break/llvm-tutor/build_obfu/libobfu.dylib /Users/xiakejie/ME/break/llvm-tutor/demo/testmbaadd/Pods/lib/libobfu.dylib
+
+cd /Users/xiakejie/ME/break/llvm-tutor/demo/testmbaadd
+
+pod install
+
+exit
+
 rm -rf -r ./build_hello
 
 folder="./build_hello"

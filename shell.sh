@@ -10,6 +10,33 @@ export LLVM_DIR=/opt/homebrew/Cellar/llvm@13/13.0.1_2
 export LLVM_TUTOR_DIR=/Users/xiakejie/ME/break/llvm-tutor
 
 
+rm -rf -r ./build_stake
+
+folder="./build_stake"
+
+if [ ! -x "$folder" ]; then
+
+mkdir $folder
+
+cd $folder
+cmake -DLT_LLVM_INSTALL_DIR=$LLVM_DIR  $LLVM_TUTOR_DIR/stake/
+make
+
+else
+
+cd $folder
+
+fi
+
+rm -rf /Users/xiakejie/ME/break/llvm-tutor/demo/stake/Pods/lib/libstake.dylib
+
+cp /Users/xiakejie/ME/break/llvm-tutor/build_stake/libstake.dylib /Users/xiakejie/ME/break/llvm-tutor/demo/stake/AppleTrace/AppleTrace/Lib/libstake.dylib
+
+cd /Users/xiakejie/ME/break/llvm-tutor/demo/stake
+
+pod install
+
+exit
 
 rm -rf -r ./build_obfu
 
@@ -29,15 +56,92 @@ cd $folder
 
 fi
 
-rm -rf /Users/xiakejie/ME/break/llvm-tutor/demo/testmbaadd/Pods/lib/libobfu.dylib
+rm -rf /Users/xiakejie/ME/break/llvm-tutor/demo/obfu/Pods/lib/libobfu.dylib
 
-cp /Users/xiakejie/ME/break/llvm-tutor/build_obfu/libobfu.dylib /Users/xiakejie/ME/break/llvm-tutor/demo/testmbaadd/Pods/lib/libobfu.dylib
+cp /Users/xiakejie/ME/break/llvm-tutor/build_obfu/libobfu.dylib /Users/xiakejie/ME/break/llvm-tutor/demo/obfu/AppleTrace/AppleTrace/Lib/libobfu.dylib
 
-cd /Users/xiakejie/ME/break/llvm-tutor/demo/testmbaadd
+cd /Users/xiakejie/ME/break/llvm-tutor/demo/obfu/AppleTrace/AppleTrace/Lib/
+
+$LLVM_DIR/bin/opt -load  ./libobfu.dylib -help | grep obfstr
+
+$LLVM_DIR/bin/clang -emit-llvm -S ./test6.c -o test6.ll
+
+$LLVM_DIR/bin/opt -load ./libobfu.dylib --obfstr test6.ll -o test6_obfuscated.bc -enable-new-pm=0 -time-passes -print-after-all
+
+llc test6_obfuscated.bc -o  test6_obfuscated.s
+llc test6.bc -o  test6.s
+
+open .
+
+cd /Users/xiakejie/ME/break/llvm-tutor/demo/obfu
 
 pod install
 
+
+cd $LLVM_TUTOR_DIR
+
+rm -rf -r ./build_obfuscator
+
+folder="./build_obfuscator"
+
+if [ ! -x "$folder" ]; then
+
+mkdir $folder
+
+cd $folder
+
+cmake -DLT_LLVM_INSTALL_DIR=$LLVM_DIR  $LLVM_TUTOR_DIR/obfuscator/
+make
+
+else
+
+cd $folder
+
+fi
+
+rm -rf /Users/xiakejie/ME/break/llvm-tutor/demo/obfu/Pods/lib/libObfuscator.so
+
+cp /Users/xiakejie/ME/break/llvm-tutor/build_obfuscator/libObfuscator.so /Users/xiakejie/ME/break/llvm-tutor/demo/obfu/AppleTrace/AppleTrace/Lib/libObfuscator.so
+
+cd /Users/xiakejie/ME/break/llvm-tutor/demo/obfu/AppleTrace/AppleTrace/Lib/
+
+$LLVM_DIR/bin/opt -load  ./libObfuscator.so -help | grep obfstr
+
+$LLVM_DIR/bin/opt -load  ./libObfuscator.so -help | grep flattening
+
+$LLVM_DIR/bin/opt -load  ./libObfuscator.so -help | grep subobf
+
+$LLVM_DIR/bin/opt -load  ./libObfuscator.so -help | grep boguscf
+
+$LLVM_DIR/bin/clang -emit-llvm -S ./test6.c -o test6.ll
+
+$LLVM_DIR/bin/opt -load ./libObfuscator.so --obfstr test6.ll -o test60_obfuscated.bc -enable-new-pm=0
+
+$LLVM_DIR/bin/opt -load ./libObfuscator.so --flattening test6.ll -o test61_flattening.bc -enable-new-pm=0
+
+$LLVM_DIR/bin/opt -load ./libObfuscator.so --subobf test6.ll -o test62_subobf.bc -enable-new-pm=0
+
+$LLVM_DIR/bin/opt -load ./libObfuscator.so --boguscf test6.ll -o test63_boguscf.bc -enable-new-pm=0
+
+
+llc test60_obfuscated.bc -o  test60_obfuscated.s
+llc test61_flattening.bc -o  test61_flattening.s
+llc test62_subobf.bc -o  test62_subobf.s
+llc test63_boguscf.bc -o  test63_boguscf.s
+llc test6.bc -o  test6.s
+
+gcc test6.s -o test6
+gcc test60_obfuscated.s -o test60_obfuscated
+gcc test61_flattening.s -o test61_flattening
+gcc test62_subobf.s -o test62_subobf
+gcc test63_boguscf.s -o test63_boguscf
+
 exit
+
+
+
+
+cd /Users/xiakejie/ME/break/llvm-tutor
 
 rm -rf -r ./build_hello
 
@@ -60,11 +164,17 @@ fi
 
 $LLVM_DIR/bin/clang -O1 -S -emit-llvm  $LLVM_TUTOR_DIR/inputs/input_for_hello.c -o input_for_hello.ll
 
+open .
+
 $LLVM_DIR/bin/opt  -load  libHelloWorld.dylib -hello ./hello.bc -o /dev/null -time-passes  -enable-new-pm=0
  
 $LLVM_DIR/bin/opt -load  ./libHelloWorld.dylib -help | grep hello
 
+$LLVM_DIR/bin/opt -load libHelloWorld.dylib -hello input_for_hello.ll -o input_for_hello_obfuscated.bc
 
+open .
+
+exit
 
 cd ..
 

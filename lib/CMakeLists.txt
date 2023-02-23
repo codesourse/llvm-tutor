@@ -12,9 +12,11 @@ set(LLVM_TUTOR_PLUGINS
     DuplicateBB
     OpcodeCounter
     MergeBB
-    SymbolObfuscation
+#    SymbolObfuscation
     CodeReview
     PrintFunctionNames
+    CombineFunction
+    Flattening
     )
 
 set(StaticCallCounter_SOURCES
@@ -41,13 +43,16 @@ set(OpcodeCounter_SOURCES
   OpcodeCounter.cpp)
 set(MergeBB_SOURCES
   MergeBB.cpp)
-set(SymbolObfuscation_SOURCES
-  SymbolObfuscation.cpp)
+#set(SymbolObfuscation_SOURCES
+#  SymbolObfuscation.cpp)
 set(CodeReview_SOURCES
   CodeReview.cpp)
 set(PrintFunctionNames_SOURCES
   PrintFunctionNames.cpp)
-
+set(CombineFunction_SOURCES
+  CombineFunction.cpp)
+set(Flattening_SOURCES
+  Flattening.cpp)
 
 
 # CONFIGURE THE PLUGIN LIBRARIES

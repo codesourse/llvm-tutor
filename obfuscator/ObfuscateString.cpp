@@ -127,11 +127,4 @@ struct ObfuscatePass : public ModulePass {
 } // namespace
 
 char ObfuscatePass::ID = 0;
-
-static RegisterPass<ObfuscatePass>X("obfstr", "obfuscate string", false, false);
-// 注册给 clang 通过 -Xclang -load -Xclang LLVMFunctionCallTime.dylib
-static RegisterStandardPasses Y(PassManagerBuilder::EP_EarlyAsPossible,
-                                [](const PassManagerBuilder &Builder,
-                                   legacy::PassManagerBase &PM) {
-                                    PM.add(new ObfuscatePass());
-                                });
+static RegisterPass<ObfuscatePass> X("obfstr", "obfuscate string");

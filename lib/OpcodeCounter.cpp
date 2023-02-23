@@ -147,7 +147,7 @@ llvmGetPassPluginInfo() {
 char LegacyOpcodeCounter::ID = 0;
 
 // #1 REGISTRATION FOR "opt -analyze -legacy-opcode-counter"
-static RegisterPass<LegacyOpcodeCounter> X(/*PassArg=*/"legacy-opcode-counter",
+static RegisterPass<LegacyOpcodeCounter> X(/*PassArg=*/"opcodecounter",
                                            /*Name=*/"Legacy OpcodeCounter Pass",
                                            /*CFGOnly=*/true,
                                            /*is_analysis=*/false);
@@ -156,12 +156,20 @@ static RegisterPass<LegacyOpcodeCounter> X(/*PassArg=*/"legacy-opcode-counter",
 // Register LegacyOpcodeCounter as a step of an existing pipeline. The insertion
 // point is set to 'EP_EarlyAsPossible', which means that LegacyOpcodeCounter
 // will be run automatically at '-O{0|1|2|3}'.
-static llvm::RegisterStandardPasses
-    RegisterOpcodeCounter(llvm::PassManagerBuilder::EP_EarlyAsPossible,
-                          [](const llvm::PassManagerBuilder &Builder,
-                             llvm::legacy::PassManagerBase &PM) {
-                            PM.add(new LegacyOpcodeCounter());
-                          });
+//static llvm::RegisterStandardPasses
+//    RegisterOpcodeCounter(llvm::PassManagerBuilder::EP_EarlyAsPossible,
+//                          [](const llvm::PassManagerBuilder &Builder,
+//                             llvm::legacy::PassManagerBase &PM) {
+//                            PM.add(new LegacyOpcodeCounter());
+//                          });
+
+static void registerSkeletonPass(const PassManagerBuilder &, legacy::PassManagerBase &PM)
+{
+   PM.add(new LegacyOpcodeCounter());
+}
+ 
+static RegisterStandardPasses RegisterMyPass(PassManagerBuilder::EP_EarlyAsPossible, registerSkeletonPass);
+
 
 //------------------------------------------------------------------------------
 // Helper functions - implementation

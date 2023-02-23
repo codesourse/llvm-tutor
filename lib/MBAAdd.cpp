@@ -190,7 +190,7 @@ llvmGetPassPluginInfo() {
 //-----------------------------------------------------------------------------
 char LegacyMBAAdd::ID = 0;
 
-static RegisterPass<LegacyMBAAdd> X(/*PassArg=*/"legacy-mba-add",
+static RegisterPass<LegacyMBAAdd> X(/*PassArg=*/"MBAAdd",
                                     /*Name=*/"MBAAdd",
                                     /*CFGOnly=*/true,
                                     /*is_analysis=*/false);
